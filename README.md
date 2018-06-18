@@ -49,7 +49,7 @@
 2. До input'ів з маскою додаємо клас "everad-mask".
 3. Задаємо стилі під дизайн сторінки.
 
-**На сторінці завжди має бути <select>, але його можна сховати (display: none).**
+**На сторінці завжди має бути select, але його можна сховати (display: none).**
 
 <link href="css/intlTelInput.css" rel="stylesheet" type="text/css">
 
