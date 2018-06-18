@@ -49,12 +49,16 @@
 2. До input'ів з маскою додаємо клас "everad-mask".
 3. Задаємо стилі під дизайн сторінки.
 
-**На сторінці завжди має бути select, але його можна сховати (display: none).**
+**На сторінці завжди має бути `<select>`, але його можна сховати (display: none).**
 
-<link href="css/intlTelInput.css" rel="stylesheet" type="text/css">
+```css 
+ <link href="css/intlTelInput.css" rel="stylesheet" type="text/css">
+```
 
-<script src="js/jquery.min.js"></script>
-<script src="js/jquery.caret.min.js"></script>
-<script src="js/intlTelInput.min.js"></script>
-<!-- <script src="js/utils.js"></script> - автоматично підключається з everadmask.js. Якщо видає помилку, тоді підключаємо тут -->
-<script src="js/everadmask.js"></script>
+```js
+ <script src="js/jquery.min.js"></script>
+ <script src="js/jquery.caret.min.js"></script>
+ <script src="js/intlTelInput.min.js"></script>
+ <!-- <script src="js/utils.js"></script> - автоматично підключається з everadmask.js. Якщо видає помилку, тоді підключаємо тут -->
+ <script src="js/everadmask.js"></script>
+````
