@@ -1,6 +1,4 @@
 $(window).load(function() {
-
-
     // It removes spaces and everything except numbers
     String.prototype.removeSpaces = function() {
         return this.replace(/[^\d/]+/g, '');
@@ -200,13 +198,10 @@ $(window).load(function() {
             'Vodafone': [ 343, 346, 347, 348, 349, 340 ]
         },
         nativeCountry = false, // Turn off auto code define, if an user has used a dropdown menu or the countri is native
-        noSpacesInputValue = '',
         setCountryDefined = false,
         once = false,
         previousPhone = '0979028542',
-        countryPriority = true, // It is turned off, if worked once
-        countryChange, // True, if a country was changed
-        caretText = 0; // Caret selection length
+        countryPriority = true; // It is turned off, if worked once
 
     phoneField.removeAttr('placeholder');
 
@@ -251,10 +246,7 @@ $(window).load(function() {
 
             tempPhoneNumber = tempPhoneNumber.join(' ').trim();
             placeholderFormattingPattern = formatType(selectedCountryPlaceholder); // Country placeholder pattern
-            // internationalFormattingPattern = formatType(selectedCountryData.dialCode + ' ' + tempPhoneNumber); // Country code + country placeholder pattern
 
-
-            // return '+' + selectedCountryData.dialCode + ' ' + formatType(tempPhoneNumber, '');
             return formatType(selectedCountryPlaceholder, "mark", true);
         },
         geoIpLookup: function(callback) {
@@ -267,11 +259,9 @@ $(window).load(function() {
         // The function changes codeForFormatFunction (Selected Country Code)
         var $this = $(this);
         codeForFormatFunction = $this.intlTelInput("getSelectedCountryData").dialCode;
-        // console.log('countrychange');
 
         if (codeForFormatFunction && once) {
             $this.val('');
-            // console.log('Country was changed by it');
             nativeCountry = true;
             once = false;
         }
@@ -280,8 +270,6 @@ $(window).load(function() {
             // countryChange = true;
             var inputValue = $this.val(),
                 codeRegExp =  new RegExp('\\+' + codeForFormatFunction);
-
-                // countryChange = false;
 
                 if (codeRegExp.test(inputValue)) {
                     $this.val('');
@@ -297,9 +285,6 @@ $(window).load(function() {
         $('input[name="phone"]').val('');
     });
 
-    // print('Внутрішні коди ідентифіковані для таких країн: <strong>' + forPrint + '</strong>');
-    // print('Поточна країна: <strong>' + country + '</strong>');
-
     phoneField.each(function() {
         $(this).after(inputPattern).removeAttr('name');
     });
@@ -310,205 +295,158 @@ $(window).load(function() {
             $testPhone = $thisForm.find('.everad-mask');
 
         if (!$testPhone.intlTelInput("isValidNumber") && !isDefined) {
-        	// event.preventDefault();
-        	// console.log($testPhone.intlTelInput('getValidationError'));
             $submitPhone.val('');
         }
     });
 
-    //if (/android|webos|blackberry|iemobile|opera mini/i.test(navigator.userAgent.toLowerCase()) === false) {
-            phoneField.on('keydown', function(event) {
-                // The function removes numbers with spaces
-                if (event.keyCode == 32) { // if spacebar
-                    event.preventDefault();
-                    return;
-                }
-
-                if (event.keyCode == 8) { // if backspace
-                    var $input = $(this),
-                        localPhone = $input.val().removeSpaces();
-
-                        // print('Форматування номеру відключене для видалення символа.');
-
-                        isDeleted = true;
-                        previousPhone = localPhone;
-                        //phoneChange($input, localPhone);
-                }
-            });
-
-            phoneField.on('input', sa_countryCode);
-
-            function phoneFill(input, phone) {
-
-                if (isDefined) {
-                    input.closest('form').find('input[name="phone"]').val('+' + phone);
-                    // print('Номер для відправки на сервер: <strong>+' + phone + '</strong>.');
-                } else {
-                    input.closest('form').find('input[name="phone"]').val('+' + codeForFormatFunction + '' + phone);
-                    // print('Номер для відправки на сервер: <strong>+' + codeForFormatFunction + '' + phone + '</strong>.');
-                }
-            }
-
-            function countryCodeFormat(phone, input) {
-
-                // The function transforms "sticky" phone number to correct format
-                // var whichFormat;
-                phoneFill(input, phone);
-                previousPhone = phone;
-
-                var codelength = codeForFormatFunction ? phone.substr(0, codeForFormatFunction.length).length : phone.substr(0, 3).length;
-                var formattingPattern = codeForFormatFunction ? placeholderFormattingPattern : '+****************';
-
-                input.EveradMask(formattingPattern, isDefined);
-            }
-
-            function sa_countryCode(event) {
-
-                var $input = $(this),
-                    phone = $input.val();
-
-
-                isDefined = /\+/.test(phone);
-
-                if (isDeleted) {
-                    isDeleted = false;
-                    phoneFill($input, phone)
-                    return;
-                }
-
-                phone = phone.removeSpaces();
-
-                if (!nativeCountry && !isDefined) {
-                    operatorCode($input, phone);
-                } else {
-                    // console.log('Native country is already detected or it is "+".');
-                    UkraineFormat($input, phone)
-                }
-
-                countryCodeFormat(phone, $input);
-            }
-       //}
-
-        function phoneChange(phone) {
-            // The function shows a previous phone
-            var temp = '';
-
-            for (var i = 0; i < phone.length; i++) {
-                if (previousPhone[i] !== phone[i]) {
-                    previousPhone = phone;
-                    break;
-                } else {
-                    temp += phone[i];
-                }
-            }
-
-            return temp
+    phoneField.on('keydown', function(event) {
+        // The function removes numbers with spaces
+        if (event.keyCode == 32) { // if spacebar
+            event.preventDefault();
+            return;
         }
 
-        function operatorCode($input, phone) {
-            if (nativeSearchFirst($input, phone) && saCountries[country].code == codeForFormatFunction && phone != codeForFormatFunction ) {
-                return;
-            }
+        if (event.keyCode == 8) { // if backspace
+            var $input = $(this),
+                localPhone = $input.val().removeSpaces();
 
-            if (countryPriority) {
-                for (var key in saCountries) {
-                    if (saCountries[key].code && saCountries[key].code === phone /*&& saCountries[key].code !== codeForFormatFunction*/) {
-                        countryPriority = false;
-                        nativeCountry = true;
-                        if (key == country) {
-                            // console.log('Native Country is "' + key + '"');
-                        } else if (key == 'RU' && country == 'KZ') {
-                            key = 'KZ';
-                            $input.intlTelInput("setCountry", key.toLowerCase());
-                            $input.trigger('countrychange');
-                            return;
-                        }
-                        // isDefined = true;
+            isDeleted = true;
+            previousPhone = localPhone;
+        }
+    });
 
-                        // $input.intlTelInput("setCountry", key.toLowerCase()).val('+' + phone);
-                        $input.intlTelInput("setCountry", key.toLowerCase()).val('');
+    phoneField.on('input', sa_countryCode);
+
+    function phoneFill(input, phone) {
+        if (isDefined) {
+            input.closest('form').find('input[name="phone"]').val('+' + phone);
+        } else {
+            input.closest('form').find('input[name="phone"]').val('+' + codeForFormatFunction + '' + phone);
+        }
+    }
+
+    function countryCodeFormat(phone, input) {
+        // The function transforms "sticky" phone number to correct format
+        phoneFill(input, phone);
+        previousPhone = phone;
+
+        var codelength = codeForFormatFunction ? phone.substr(0, codeForFormatFunction.length).length : phone.substr(0, 3).length;
+        var formattingPattern = codeForFormatFunction ? placeholderFormattingPattern : '+****************';
+
+        input.EveradMask(formattingPattern, isDefined);
+    }
+
+    function sa_countryCode() {
+        var $input = $(this),
+            phone = $input.val();
+
+
+        isDefined = /\+/.test(phone);
+
+        if (isDeleted) {
+            isDeleted = false;
+            phoneFill($input, phone)
+            return;
+        }
+
+        phone = phone.removeSpaces();
+
+        if (!nativeCountry && !isDefined) {
+            operatorCode($input, phone);
+        } else {
+            // When native country is already detected or it is "+"
+            UkraineFormat($input, phone)
+        }
+
+        countryCodeFormat(phone, $input);
+    }
+
+    function operatorCode($input, phone) {
+        if (nativeSearchFirst($input, phone) && saCountries[country].code == codeForFormatFunction && phone != codeForFormatFunction ) {
+            return;
+        }
+
+        if (countryPriority) {
+            for (var key in saCountries) {
+                if (saCountries[key].code && saCountries[key].code === phone) {
+                    countryPriority = false;
+                    nativeCountry = true;
+                    if (key == 'RU' && country == 'KZ') {
+                        key = 'KZ';
+                        $input.intlTelInput("setCountry", key.toLowerCase());
                         $input.trigger('countrychange');
-                        console.log('Country is ' + key + '. Code is ' + phone);
                         return;
                     }
+
+                    $input.intlTelInput("setCountry", key.toLowerCase()).val('');
+                    $input.trigger('countrychange');
+                    return;
                 }
-            }
-
-            var setCountry = flaga(phone.substr(0, 3));
-
-            if (!setCountryDefined && setCountry) {
-                var forItalianOperatorCode = phone;
-                // setCountryDefined = true;
-
-                $input.intlTelInput("setCountry", setCountry);
-                $input.trigger('countrychange');
-
-                // print('Оператор визначений для країни <strong>"' + setCountry + '"</strong>. Прапор та міжнародний код країни змінений.');
-
-                if (setCountry == country) {
-                    // console.log('Native Country is "' + key + '"');
-                }
-
-                if (setCountry == 'ua') {
-                	UkraineFormat($input, phone);
-	            } else if (setCountry == 'it') {
-	                for (var key in italian) {
-	                    var italianOperatorArray = italian[key];
-	                    for (var i = 0; i < italianOperatorArray.length; i++) {
-	                        if (italianOperatorArray[i] == forItalianOperatorCode) {
-	                            // print('Італійський оператор: <b>"' + key + '"</b>');
-	                            break;
-	                        }
-	                    }
-	                }
-	            }
             }
         }
 
-        function UkraineFormat($input, phone) {
-        	if (phone[0] === '0' && codeForFormatFunction === '380' && phone.length > 2) {
-                phone = phone.substr(1);
-                $input.val(phone);
-        	}
-        }
+        var setCountry = flaga(phone.substr(0, 3));
 
-        function flaga(phone) {
-            // The function defines an entered phone number to input, and returns if it has found an operator code from operators' code list.
+        if (!setCountryDefined && setCountry) {
+            var forItalianOperatorCode = phone;
 
-            for (var key in saCountries) {
-                for (var i = 0; i < saCountries[key].operator.length; i++) {
-                    if (phone == saCountries[key].operator[i]) {
-                        if (codeForFormatFunction !== '380' && saCountries[key].operator[i].length == 2) {
-                            return false;
+            $input.intlTelInput("setCountry", setCountry);
+            $input.trigger('countrychange');
+
+            if (setCountry == 'ua') {
+              UkraineFormat($input, phone);
+            } else if (setCountry == 'it') {
+                for (var key in italian) {
+                    var italianOperatorArray = italian[key];
+                    for (var i = 0; i < italianOperatorArray.length; i++) {
+                        if (italianOperatorArray[i] == forItalianOperatorCode) {
+                            // Italian operator
+                            break;
                         }
-                        return key.toLowerCase();
                     }
                 }
             }
-
-            return false;
         }
+    }
 
-        function print(text) {
-            $('.root').prepend('<p>' + text + '</p>');
-        }
+    function UkraineFormat($input, phone) {
+      if (phone[0] === '0' && codeForFormatFunction === '380' && phone.length > 2) {
+        phone = phone.substr(1);
+        $input.val(phone);
+      }
+    }
 
-        function nativeSearchFirst($input, phone) {
-            var comparedArray = saCountries[country].operator.slice();
-            comparedArray.push(saCountries[country].code);
-            return comparedArray.some(function(element, index, array) {
-                if (phone == element) {
-                    if (phone != '380' && phone[0] === '0') {
-                        phone = phone.substr(1);
-                		$input.val(phone);
+    function flaga(phone) {
+        // The function defines an entered phone number to input, and returns if it has found an operator code from operators' code list.
+        for (var key in saCountries) {
+            for (var i = 0; i < saCountries[key].operator.length; i++) {
+                if (phone == saCountries[key].operator[i]) {
+                    if (codeForFormatFunction !== '380' && saCountries[key].operator[i].length == 2) {
+                        return false;
                     }
-                    // console.log('Native country is changed, because ' + phone + ' == ' + element);
-                    nativeCountry = true;
+                    return key.toLowerCase();
                 }
-                return element.indexOf(phone) === 0;
-            });
-
+            }
         }
+
+        return false;
+    }
+
+    function nativeSearchFirst($input, phone) {
+        var comparedArray = saCountries[country].operator.slice();
+        comparedArray.push(saCountries[country].code);
+        return comparedArray.some(function(element) {
+            if (phone == element) {
+                if (phone != '380' && phone[0] === '0') {
+                    phone = phone.substr(1);
+                    $input.val(phone);
+                }
+                nativeCountry = true;
+            }
+            return element.indexOf(phone) === 0;
+        });
+
+    }
 
 
 
